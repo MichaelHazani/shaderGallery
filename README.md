@@ -1,6 +1,6 @@
 # shaderGallery
 
-## [live demo](michaelhazani.com/projects/everydays/051117)
+## [live demo](http://michaelhazani.com/projects/everydays/051117)
 ![alt](https://github.com/MichaelHazani/shaderGallery/raw/master/shgl.png)
 
 
