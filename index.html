@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<script src="./js/lib/three.js"></script>
+	<script src="./js/lib/OrbitControls.js"></script>
+	<script src="./js/lib/WaterShader.js"></script>
+	<title>Shader Gallery</title>
+</head>
+
+<body>
+	<div id="container"></div>
+	<script id="fragment_shader4" type="x-shader/x-fragment">
+
+		uniform float time; uniform vec2 resolution; varying vec2 vUv; void main( void ) { vec2 position = -1.0 + 2.0 * vUv; float
+		red = abs( sin( position.x * position.y + time / 5.0 ) ); float green = abs( sin( position.x * position.y + time / 4.0
+		) ); float blue = abs( sin( position.x * position.y + time / 3.0 ) ); gl_FragColor = vec4( red, green, blue, 1.0 ); }
+
+	</script>
+
+	<script id="fragment_shader3" type="x-shader/x-fragment">
+
+		uniform float time; uniform vec2 resolution; varying vec2 vUv; void main( void ) { vec2 position = vUv; float color = 0.0;
+		color += sin( position.x * cos( time / 15.0 ) * 80.0 ) + cos( position.y * cos( time / 15.0 ) * 10.0 ); color += sin( position.y
+		* sin( time / 10.0 ) * 40.0 ) + cos( position.x * sin( time / 25.0 ) * 40.0 ); color += sin( position.x * sin( time / 5.0
+		) * 10.0 ) + sin( position.y * sin( time / 35.0 ) * 80.0 ); color *= sin( time / 10.0 ) * 0.5; gl_FragColor = vec4( vec3(
+		color, color * 0.5, sin( color + time / 3.0 ) * 0.75 ), 1.0 ); }
+
+	</script>
+
+	<script id="fragment_shader2" type="x-shader/x-fragment">
+
+		uniform float time; uniform vec2 resolution; uniform sampler2D texture; varying vec2 vUv; void main( void ) { vec2 position
+		= -1.0 + 2.0 * vUv; float a = atan( position.y, position.x ); float r = sqrt( dot( position, position ) ); vec2 uv; uv.x
+		= cos( a ) / r; uv.y = sin( a ) / r; uv /= 10.0; uv += time * 0.05; vec3 color = texture2D( texture, uv ).rgb; gl_FragColor
+		= vec4( color * r * 1.5, 1.0 ); }
+	</script>
+
+	<script id="fragment_shader1" type="x-shader/x-fragment">
+
+		uniform vec2 resolution; uniform float time; varying vec2 vUv; void main(void) { vec2 p = -1.0 + 2.0 * vUv; float a = time*40.0;
+		float d,e,f,g=1.0/40.0,h,i,r,q; e=400.0*(p.x*0.5+0.5); f=400.0*(p.y*0.5+0.5); i=200.0+sin(e*g+a/150.0)*20.0; d=200.0+cos(f*g/2.0)*18.0+cos(e*g)*7.0;
+		r=sqrt(pow(i-e,2.0)+pow(d-f,2.0)); q=f/r; e=(r*cos(q))-a/2.0;f=(r*sin(q))-a/2.0; d=sin(e*g)*176.0+sin(e*g)*164.0+r; h=((f+d)+a/2.0)*g;
+		i=cos(h+r*p.x/1.3)*(e+e+a)+cos(q*g*6.0)*(r+h/3.0); h=sin(f*g)*144.0-sin(e*g)*212.0*p.x; h=(h+(f-e)*q+sin(r-(a+h)/7.0)*10.0+i/4.0)*g;
+		i+=cos(h*2.3*sin(a/350.0-q))*184.0*sin(q-(r*4.3+a/12.0)*g)+tan(r*g+h)*184.0*cos(r*g+h); i=mod(i/5.6,256.0)/64.0; if(i
+		<0.0) i+=4.0; if(i>=2.0) i=4.0-i; d=r/350.0; d+=sin(d*d*8.0)*0.52; f=(sin(a*g)+1.0)/2.0; gl_FragColor=vec4(vec3(f*i/1.6,i/2.0+d/13.0,i)*d*p.x+vec3(i/1.3+d/8.0,i/2.0+d/18.0,i)*d*(1.0-p.x),1.0);
+			}
+	</script>
+
+	<script id="fragment_shader5" type="x-shader/x-fragment">
+		//from glsl sandbox: http://glslsandbox.com/e#40373.0 uniform float time; varying vec2 vUv; vec2 v(vec2 p,float s){ vec2
+		pos = -1.0 + 2.0 *vUv; return vec2(sin(s*p.y+time*0.263423+pos.y*1.1423),cos(s*p.x-time*0.32364263+pos.x*1.4235)); //advection
+		vector field } vec2 RK4(vec2 p,float s, float h){ vec2 k1 = v(p,s); vec2 k2 = v(p+0.5*h*k1,s); vec2 k3 = v(p+0.5*h*k2,s);
+		vec2 k4 = v(p+h*k3,s); return h/3.*(0.5*k1+k2+k3+0.5*k4); } vec3 rainbow(float hue){ return abs(mod(hue * 6.0 + vec3(0.0,
+		4.0, 2.0), 6.0) - 3.0) - 1.0; } void main( void ) { vec2 uv = 2.*vUv.xy-vec2(vUv.x/vUv.y,1); float s = 2.; float h = 1.0;
+		for(int i = 0; i
+		<30; i++) { float hh=h * log(1./(exp(2.*sin(time*0.18345 + float(i) * 0.1))))/5.; uv+=RK4(uv,s,hh); float
+		 factor=1 .2; s*=factor; h/=factor; } gl_FragColor=v ec4(rainbow(time*0.1 + floor(length(uv)*10.)/10.),1); //centered rainbow
+		 with 10 visible rings } </script>
+
+			<script id="fragment_shader6" type="x-shader/x-fragment">
+				precision highp float; varying vec2 vUv; uniform float time; vec2 hash(in vec2 p) { return cos(time + sin(mat2(17., 5., 3.,
+				257.) * p - p) * 1234.5678); } float noise( in vec2 p ) { const float K1 = (sqrt(3.)-1.)/2.; const float K2 = (3.-sqrt(3.))/6.;
+				vec2 i = floor(p + (p.x + p.y) * K1); vec2 a = p - i + (i.x + i.y)*K2; vec2 o = (a.x > a.y) ? vec2(1., 0.) : vec2(0.,
+				1.); vec2 b = a - o + K2; vec2 c = a - 1.0 + 2.0 * K2; vec3 h = (.5 - vec3(dot(a, a), dot(b, b), dot(c, c))) * 3.; vec3
+				n = vec3(dot(a, hash(i)), dot(b, hash(i + o)), dot(c, hash(i+1.0))); return dot(n, h*h*h* 2.0 *h) * 0.5 + 0.5; } void
+				main() { vec2 p = -1.0 + 2.0 *vUv;; p = 2.0 * p - 1.0; p.x *= vUv.x / vUv.y; p += 10.; p *= .5; p += 100.; float f =
+				2.; float a = .5; float n = 0.; for(int i = 0; i
+				< 8; i++) { n +=n oise(p * f + noise(p * f ) * 0.5) * a; p=p .yx;
+				 f *=2 .; a *=. 5; } gl_FragColor=v ec4(n); } </script>
+					<script id="fragment_shader7" type="x-shader/x-fragment">
+						uniform float time; varying vec2 vUv; void main( void ) { vec2 position = -1.0 + 2.0 *vUv; float color = 0.0; color += sin(
+						position.x * cos( time / 18.0 ) * 1250.0 ) + cos( position.y * cos( time / 150.0 ) * 10.0 ); color += sin( position.y
+						* sin( time / 10.0 ) * 40.0 ) + cos( position.x * sin( time / 25.0 ) * 40.0 ); color += sin( position.x * sin( time
+						/ 5.0 ) * 100.0 ) + sin( position.y * sin( time / 35.0 ) * 80.0 ); color *= sin( time / 10.0 ) * 0.5; gl_FragColor
+						= vec4( vec3( color, color * 0.5, sin( color + time / 3.0 ) * 0.75 ), 1.0 );
+					</script>
+
+
+					<script id="vertexShader" type="x-shader/x-vertex">
+
+						varying vec2 vUv; void main() { vUv = uv; vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 ); gl_Position = projectionMatrix
+						* mvPosition; }
+
+					</script>
+					<script src="./js/app.js"></script>
+</body>
+
+</html>
